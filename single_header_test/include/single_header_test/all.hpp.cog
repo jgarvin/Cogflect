@@ -1,0 +1,21 @@
+#ifndef INCLUDED_PROJECTNAME_SINGLE_HEADER_TEST_HPP
+#define INCLUDED_PROJECTNAME_SINGLE_HEADER_TEST_HPP
+
+/*[[[cog
+
+  import cogflect as cf
+
+  fields = [
+      ["name",  "value",     "type",    "tags",            "metadata"],
+      ["FOO",   15,          "double",  ["fuzzy"],         cf.typedef("float", "serial_type")],
+      ["BAR",   23,          "double",  ["fuzzy", "ugly"]],
+      ["BUZZ",  42,          "int",     None,              cf.const("unsigned", "bazz", 3)]
+  ]
+
+  cf.Enum("single_header_test", fields)
+  cf.CppClass("single_header_test", fields)
+
+  ]]]*/
+//[[[end]]]
+
+#endif

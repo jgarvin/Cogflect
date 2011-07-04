@@ -1,0 +1,24 @@
+#ifndef INCLUDED_TRACK_ASSIGNMENTS_TEST_MISSILE_HPP
+#define INCLUDED_TRACK_ASSIGNMENTS_TEST_MISSILE_HPP
+
+#include <string>
+
+/*[[[cog
+
+  import cogflect as cf
+
+  fields = [
+  ["name",              "type",          "tags"],
+  ["MISSILE_TYPE",      "std::string",   None  ],
+  ["LOCATION",          "double[3]",     None  ],
+  ["VELOCITY",          "double[3]",     None  ],
+  ["ACCELERATION",      "double[3]",     None  ]
+  ]
+
+  cf.Enum("missile", fields)
+  cf.CppClass("missile", fields)
+
+  ]]]*/
+//[[[end]]]
+
+#endif

@@ -1,0 +1,16 @@
+#ifndef INCLUDED_PROJECTNAME_EXAMPLE_DATA_HPP
+#define INCLUDED_PROJECTNAME_EXAMPLE_DATA_HPP
+
+#include <example/enum.hpp>
+
+/*[[[cog
+
+  from cogflect.CppClass import CppClass
+  import example_fields
+
+  CppClass("example", example_fields.fields)
+
+  ]]]*/
+//[[[end]]]
+
+#endif

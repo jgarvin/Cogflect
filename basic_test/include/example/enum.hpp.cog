@@ -1,0 +1,14 @@
+#ifndef INCLUDED_PROJECTNAME_EXAMPLE_ENUM_HPP
+#define INCLUDED_PROJECTNAME_EXAMPLE_ENUM_HPP
+
+/*[[[cog
+
+  from cogflect.Enum import Enum
+  import example_fields
+
+  Enum("example", example_fields.fields)
+
+]]]*/
+//[[[end]]]
+
+#endif
