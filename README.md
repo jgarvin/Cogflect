@@ -102,7 +102,7 @@ Producing output like this:
     Z_VELOCITY     9
     Z_ACCELERATION 300
 
-If you want to see what the generated code looks like, check the generated_sample folder.
+If you want to see what the generated code looks like, [here's a sample](http://github.com/jgarvin/Cogflect/blob/master/generated_sample/missile.hpp "Generated sample").
 
 ## How far along is it?
 
