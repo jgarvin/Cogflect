@@ -2,8 +2,6 @@
 ### Original Author: Joseph H. Garvin (2011)
 ### License: MIT
 
-* * *
-
 ## What is Cogflect for?
 
 Cogflect is intended to do the smallest amount of C++ code generation possible to bootstrap proper C++ metaprogramming. Code generation makes builds more complicated and generated code can be a pain debug, so rather than try to generate every possible thing for you, Cogflect's philosophy is to do just enough work to get reflection information accessible at the type level, so that you can use C++ templates to do most of your metaprogramming. Cogflect does go over this bound occasionally, when it will significantly help usability.
