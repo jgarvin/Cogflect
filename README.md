@@ -1,6 +1,6 @@
 # cogflect - A set of cog recipes for C++ reflection
-# Original Author: Joseph H. Garvin (2011)
-# License: MIT
+### Original Author: Joseph H. Garvin (2011)
+### License: MIT
 
 * * *
 
