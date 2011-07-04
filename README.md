@@ -104,6 +104,10 @@ Producing output like this:
 
 If you want to see what the generated code looks like, check the generated_sample folder.
 
+## How far along is it?
+
+Cogflect should be considered pre-alpha. There are no guarantees about maintaining backwards compatibility yet. Names and interfaces may change at will.
+
 ## Building / Installation
 
 You will need:
