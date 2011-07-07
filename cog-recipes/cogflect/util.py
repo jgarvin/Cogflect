@@ -41,7 +41,7 @@ def sanitizeTypename(typename):
     return typename
 
 def verifyName(name):
-    "Protects against use of C++ keywords."
+    "Protects against use of invalid variable names."
 
     # TODO: Whitespace/empty check
     if name == "":
