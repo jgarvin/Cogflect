@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from util import verifyName
+
 # 'object' is a C class so python doesn't let us set arbitrary
 # attributes on it. We subclass it so we can just smack whatever
 # we want on there.
@@ -20,6 +22,7 @@ class GeneratorBase(object):
         for row in fields[1:]:
             field = _object()
             for field_name, value in zip(self.schema, row):
+                verifyName(field_name)
                 setattr(field, field_name, value)
             self.fields.append(field)
 
@@ -32,6 +35,9 @@ class GeneratorBase(object):
                     f.tags = [f.tags]
             else:
                 f.tags = []
+
+            for t in f.tags:
+                verifyName(t)
 
             if (hasattr(f, "metadata") and f.metadata != None
                 and type(f.metadata) != list):

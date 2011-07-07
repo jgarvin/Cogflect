@@ -39,3 +39,43 @@ def sanitizeTypename(typename):
         # as '>>' operator. This is fixed in C++0x.
         return "cogflect::type_passthrough< %s >::type" % typename
     return typename
+
+def verifyName(name):
+    "Protects against use of C++ keywords."
+
+    # TODO: Whitespace/empty check
+    if name == "":
+        cog.error("Empty strings cannot be used for names.")
+
+    if name.isspace():
+        cog.error("Names must include non-whitespace characters.")
+
+    prohibited = ["and", "and_eq",
+                  "alignas", "alignof", "asm", "auto", "bitand", "bitor", "bool", "break",
+                  "case", "catch", "char", "char16_t", "char32_t", "class", "compl", "const",
+                  "constexpr", "const_cast", "continue", "decltype", "default", "delete", "double", "dynamic_cast",
+                  "else", "enum", "explicit", "export", "extern", "false", "float", "for",
+                  "friend", "goto", "if", "inline", "int", "long", "mutable", "namespace",
+                  "new", "noexcept", "not", "not_eq", "nullptr", "operator", "or", "or_eq",
+                  "private", "protected", "public", "register", "reinterpret_cast", "return", "short", "signed",
+                  "sizeof", "static", "static_assert", "static_cast", "struct", "switch", "template", "this",
+                  "thread_local", "throw", "true", "try", "typedef", "typeid", "typename", "union",
+                  "unsigned", "using", "virtual", "void", "volatile", "wchar_t", "while", "xor",
+                  "xor_eq"]
+
+    if name in prohibited:
+        cog.error("Cannot use \"%s\" as a name. It is a C++ keyword. "
+                  "Did you accidentally swap the type and name arguments? "
+                  "Names cannot be be C++ keywords, they must follow C++ "
+                  "variable name rules." % name)
+
+    if name[0].isdigit():
+        cog.error("Cannot use \"%s\" as a name. Names cannot start with a digit, "
+                  "they must follow C++ variable name rules." % name)
+
+    if name[0] == "_":
+        cog.error("Cannot use \"%s\" as a name. Names cannot start with an underscore, "
+                  "they must follow C++ variable name rules." % name)
+
+    if not name.isalnum():
+        cog.error("Cannot use \"%s\" as a name. Names must be alphanumeric." % name)
