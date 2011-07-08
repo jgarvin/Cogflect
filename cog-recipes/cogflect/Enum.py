@@ -6,9 +6,15 @@ from cogflect.GeneratorBase import GeneratorBase
 from cogflect.util import typedef, const, sanitizeTypename
 from cogflect.common import generate_enum_common
 
+import hashlib
+
 class Enum(GeneratorBase):
-    def __init__(self, name, fields):
-        GeneratorBase.__init__(self, name, fields)
+    def __init__(self, name, fields, config={}):
+        GeneratorBase.__init__(self, name, fields, config)
+
+    def __get_name_hash(self, name):
+        name_hash = int(hashlib.sha1(name).hexdigest(), 16) >> 96
+        return name_hash
 
     def __gen_info_index(self, field, idx):
         cog.out("template<>\n"
@@ -34,6 +40,15 @@ class Enum(GeneratorBase):
                 cog.out("    typedef cogflect::true_t %s;\n" % t)
             else:
                 cog.out("    typedef cogflect::false_t %s;\n" % t)
+
+        # SHA1 has is 160-bits, but 'unsigned long long' is only
+        # guaranteed by the standard to be 64-bits, so we chop off
+        # the 96 bit difference. Collisions are extremely unlikely with SHA1 already,
+        # but it's even less likely that you'd get a collision and *not* get a C++
+        # type error, we're only dealing with strings that are legit C++ variable
+        # names.
+        name_hash = self.__get_name_hash(field.name)
+        cog.out("    static const unsigned long long name_hash = %du;\n" % name_hash)
 
         for e in field.metadata:
             cog.out("    ")
@@ -144,7 +159,12 @@ class Enum(GeneratorBase):
                 "        switcher(sw);\n"
                 "        return sw.str;\n"
                 "    }\n"
-                "\n")
+                "\n"
+                "    template<unsigned long long>\n"
+                "    struct info_with_hash\n"
+                "    {\n"
+                "        typedef cogflect::false_t type;\n"
+                "    };\n")
 
         cog.out("    // This is a constant rather than a function so that it\n"
                 "    // can be used as a template parameter. In C++0x we can change\n"
@@ -152,6 +172,13 @@ class Enum(GeneratorBase):
         cog.out("    static const unsigned size = %d;\n\n" % len(self.fields))
 
         cog.out("};\n\n") # close class
+
+        for f in self.fields:
+            cog.out("template<>\n"
+                    "struct type::info_with_hash<%du>\n"
+                    "{\n"
+                    "    typedef %s_INFO type;\n"
+                    "};\n\n" % (self.__get_name_hash(f.name), f.name))
 
         cog.out("namespace {\n\n")
         for f in self.fields:

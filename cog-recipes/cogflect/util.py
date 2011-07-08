@@ -19,6 +19,13 @@ class const(object):
     def out(self):
         cog.out("static const %s %s = %s;" % (self.cpp_type, self.name, self.value))
 
+def indent(s, n):
+    result = []
+    for line in s.split("\n"):
+        result.append((' ' * n) + line)
+
+    return "\n".join(result)
+
 def sanitizeTypename(typename):
     # Instead of sanitizing typenames we could try to sanitize variable declarations
     # by moving the array extents over to the variable name, but to do that reliably
@@ -79,3 +86,5 @@ def verifyName(name):
 
     if not name.isalnum():
         cog.error("Cannot use \"%s\" as a name. Names must be alphanumeric." % name)
+
+
