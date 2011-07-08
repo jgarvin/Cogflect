@@ -9,23 +9,34 @@
             std::abort();                       \
     }
 
-class TrackedMissile : public missile::data {
+template<class T>
+class TrackedType
+{
 public:
-    template<typename Info>
-    void set_member(typename Info::type const& value)
-    {
-        changed_.set(Info::index);
-        get_member< Info >() = value;
-    }
+  template<typename Info>
+  void setMember(typename Info::type const& value)
+  {
+    changed_.set(Info::index);
+    data_.template get_member< Info >() = value;
+  }
 
-    bool fieldChanged(missile::type i) const
-    {
-        return changed_.test(i.index());
-    }
+  template<typename Info>
+  typename Info::type getMember() const
+  {
+    return data_.template get_member< Info >();
+  }
+
+  bool fieldChanged(typename T::enum_type i) const
+  {
+    return changed_.test(i.index());
+  }
 
 private:
-    std::bitset<missile::size> changed_;
+  T data_;
+  std::bitset<T::enum_type::size> changed_;
 };
+
+typedef TrackedType<missile::data> TrackedMissile;
 
 int main()
 {
@@ -33,7 +44,7 @@ int main()
 
     TEST_ASSERT( !x.fieldChanged(missile::MISSILE_TYPE) );
 
-    x.set_member< missile::MISSILE_TYPE_INFO >("ICBM");
+    x.setMember< missile::MISSILE_TYPE_INFO >("ICBM");
 
     TEST_ASSERT( x.fieldChanged(missile::MISSILE_TYPE) );
 
