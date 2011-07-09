@@ -8,7 +8,9 @@ from util import verifyName
 class _object(object): pass
 
 class GeneratorBase(object):
-    def __init__(self, name, fields):
+    def __init__(self, name, fields, config={}):
+        self.config = config
+
         self.name = name
         self.fields = []
         self.possible_tags = set()
