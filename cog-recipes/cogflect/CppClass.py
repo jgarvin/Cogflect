@@ -89,25 +89,25 @@ _body = """
     template<class VisitorT>
     inline void for_all_members(VisitorT& visitor)
     {
-        %(forAllMembersBody)s
+%(forAllMembersBody)s
     }
 
     template<class VisitorT>
     inline void for_all_members(VisitorT& visitor) const
     {
-        %(forAllMembersBody)s
+%(forAllMembersBody)s
     }
 
     template<class VisitorT>
     inline void for_all_members(VisitorT const& visitor)
     {
-        %(forAllMembersBody)s
+%(forAllMembersBody)s
     }
 
     template<class VisitorT>
     inline void for_all_members(VisitorT const& visitor) const
     {
-        %(forAllMembersBody)s
+%(forAllMembersBody)s
     }
 
     template<class TargetType>
