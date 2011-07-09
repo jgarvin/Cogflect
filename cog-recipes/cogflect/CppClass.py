@@ -2,7 +2,7 @@
 
 from cogflect.GeneratorBase import GeneratorBase
 from cogflect.common import generate_cppclass_common
-from cogflect.util import sanitizeTypename
+from cogflect.util import sanitizeTypename, indent
 import cog
 
 _body = """
@@ -86,12 +86,54 @@ _body = """
         type::index_switcher(index, tmp);
     }
 
+    template<class VisitorT>
+    inline void for_all_members(VisitorT& visitor)
+    {
+        %(forAllMembersBody)s
+    }
+
+    template<class VisitorT>
+    inline void for_all_members(VisitorT& visitor) const
+    {
+        %(forAllMembersBody)s
+    }
+
+    template<class VisitorT>
+    inline void for_all_members(VisitorT const& visitor)
+    {
+        %(forAllMembersBody)s
+    }
+
+    template<class VisitorT>
+    inline void for_all_members(VisitorT const& visitor) const
+    {
+        %(forAllMembersBody)s
+    }
+
+    template<class TargetType>
+    inline void shape_assign(TargetType const& other)
+    {
+        cogflect::shape_assign<data, TargetType> visitor;
+        for_all_members(visitor);
+    }
+
 
 """
 
 class CppClass(GeneratorBase):
-    def __init__(self, name, fields):
-        GeneratorBase.__init__(self, name, fields)
+    def __init__(self, name, fields, config={}):
+        GeneratorBase.__init__(self, name, fields, config)
+
+    def __gen_for_all_members(self):
+        calls = []
+
+        call_template = ("visitor.\n"
+                         "   template process_member<%s_INFO>(%s_);")
+
+        for f in self.fields:
+            calls.append(indent(call_template % (f.name, f.name.lower()), 8))
+
+        return "\n".join(calls)
 
     def generate(self):
         generate_cppclass_common()
@@ -103,7 +145,8 @@ class CppClass(GeneratorBase):
                 "{\n"
                 "public:")
 
-        cog.out(_body % { "name" : self.name })
+        cog.out(_body % { "name" : self.name,
+                          "forAllMembersBody" : self.__gen_for_all_members() })
 
         cog.out("private:\n")
 

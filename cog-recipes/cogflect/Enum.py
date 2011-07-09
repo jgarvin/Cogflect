@@ -36,6 +36,7 @@ class Enum(GeneratorBase):
             cog.out("    typedef %s type;\n" % sanitizeTypename(field.type))
 
         cog.out("    typedef %s::type enum_type;\n" % self.name)
+        cog.out("    typedef %s::data data_type;\n" % self.name)
 
         # SHA1 has is 160-bits, but 'unsigned long long' is only
         # guaranteed by the standard to be 64-bits, so we chop off
@@ -75,7 +76,8 @@ class Enum(GeneratorBase):
         cog.out("namespace " + self.name + " {")
         cog.out("\n\n")
 
-        cog.out("class type;\n\n")
+        cog.out("class type;\n")
+        cog.out("class data;\n\n")
 
         # Forward declare info_index templates
         cog.out("template<unsigned i>\n"

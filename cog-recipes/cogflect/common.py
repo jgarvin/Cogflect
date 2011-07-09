@@ -119,6 +119,57 @@ struct pass_member_action
     DataType& data_;
 };
 
+/*
+TODO: Pull this stuff out and give access to a
+get_same_member<T> template that given an info template
+from one class gets you the same named T in the other
+class.
+*/
+
+template<class SourceMemberType, class TargetMemberType>
+struct shape_assign_helper
+{
+    inline static void assign(typename SourceMemberType::type& v,
+                              typename TargetMemberType::data_type& d)
+    {
+        v = d.template get_member<TargetMemberType>();
+    }
+};
+
+template<class SourceMemberType>
+struct shape_assign_helper<SourceMemberType, cogflect::false_t>
+{
+    // no-op when target doesn't have the same member
+    // use ellipses since no sensible type for second argument
+    inline static void assign(...)
+    {
+    }
+};
+
+template<class Source, class Target>
+struct shape_assign
+{
+    inline shape_assign(Target& target)
+      : target_(target)
+    {}
+
+    template<class MemberType>
+    void process_member(typename MemberType::type& v) const
+    {
+        // Check if target type has a member with the same name by checking if
+        // it has a member with the same name_hash as the current member type being
+        // iterated.
+
+        typedef typename Target::enum_type target_enum_type;
+        typedef typename target_enum_type::template info_with_hash<MemberType::name_hash>::type
+            potential_type;
+
+        shape_assign_helper<MemberType, potential_type>::assign(v, target_);
+    }
+
+    Target& target_;
+};
+
 }
 
 #endif
