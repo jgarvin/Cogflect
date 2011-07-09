@@ -87,11 +87,6 @@ class Enum(GeneratorBase):
             self.__gen_info_index(f, i)
             cog.out("\n\n")
 
-        cog.out("// This is a constant rather than a function so that it\n"
-                "// can be used as a template parameter. In C++0x we can change\n"
-                "// it to be a function using the 'constexpr' keyword.\n")
-        cog.out("static const unsigned size = %d;\n\n" % len(self.fields))
-
         cog.out("class type\n"
                 "{\n"
                 "private:\n"
