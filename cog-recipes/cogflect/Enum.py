@@ -35,12 +35,6 @@ class Enum(GeneratorBase):
         if field.type != None:
             cog.out("    typedef %s type;\n" % sanitizeTypename(field.type))
 
-        for t in self.possible_tags:
-            if t in field.tags:
-                cog.out("    typedef cogflect::true_t %s;\n" % t)
-            else:
-                cog.out("    typedef cogflect::false_t %s;\n" % t)
-
         cog.out("    typedef %s::type enum_type;\n" % self.name)
 
         # SHA1 has is 160-bits, but 'unsigned long long' is only
@@ -51,6 +45,16 @@ class Enum(GeneratorBase):
         # names.
         name_hash = self.__get_name_hash(field.name)
         cog.out("    static const unsigned long long name_hash = %du;\n" % name_hash)
+
+        if self.possible_tags:
+            cog.out("    struct tags\n"
+                    "    {\n")
+            for t in self.possible_tags:
+                if t in field.tags:
+                    cog.out("        typedef cogflect::true_t %s;\n" % t)
+                else:
+                    cog.out("        typedef cogflect::false_t %s;\n" % t)
+            cog.out("    };\n")
 
         if field.metadata:
             cog.out("    struct metadata\n"
