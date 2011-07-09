@@ -41,11 +41,13 @@ class Enum(GeneratorBase):
             else:
                 cog.out("    typedef cogflect::false_t %s;\n" % t)
 
+        cog.out("    typedef %s::type enum_type;\n" % self.name)
+
         # SHA1 has is 160-bits, but 'unsigned long long' is only
         # guaranteed by the standard to be 64-bits, so we chop off
         # the 96 bit difference. Collisions are extremely unlikely with SHA1 already,
         # but it's even less likely that you'd get a collision and *not* get a C++
-        # type error, we're only dealing with strings that are legit C++ variable
+        # type error, and we're only dealing with strings that are legit C++ variable
         # names.
         name_hash = self.__get_name_hash(field.name)
         cog.out("    static const unsigned long long name_hash = %du;\n" % name_hash)
@@ -64,6 +66,8 @@ class Enum(GeneratorBase):
 
         cog.out("namespace " + self.name + " {")
         cog.out("\n\n")
+
+        cog.out("class type;\n\n")
 
         # Forward declare info_index templates
         cog.out("template<unsigned i>\n"
@@ -164,7 +168,7 @@ class Enum(GeneratorBase):
                 "    struct info_with_hash\n"
                 "    {\n"
                 "        typedef cogflect::false_t type;\n"
-                "    };\n")
+                "    };\n\n")
 
         cog.out("    // This is a constant rather than a function so that it\n"
                 "    // can be used as a template parameter. In C++0x we can change\n"
