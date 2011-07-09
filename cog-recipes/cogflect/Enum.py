@@ -52,10 +52,14 @@ class Enum(GeneratorBase):
         name_hash = self.__get_name_hash(field.name)
         cog.out("    static const unsigned long long name_hash = %du;\n" % name_hash)
 
-        for e in field.metadata:
-            cog.out("    ")
-            e.out()
-            cog.out("\n")
+        if field.metadata:
+            cog.out("    struct metadata\n"
+                    "    {\n")
+            for e in field.metadata:
+                cog.out("        ")
+                e.out()
+                cog.out("\n")
+            cog.out("    };\n")
 
         cog.out("};\n\n")
 
