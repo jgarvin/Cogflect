@@ -103,6 +103,9 @@ struct false_t {};
 
 namespace missile {
 
+class type;
+class data;
+
 template<unsigned i>
 struct info_index;
 
@@ -113,6 +116,9 @@ struct info_index<0>
     static const int value = 0;
     inline static const char* string() { return "missile::MISSILE_TYPE"; }
     typedef std::string type;
+    typedef missile::type enum_type;
+    typedef missile::data data_type;
+    static const unsigned long long name_hash = 18317973204608468020u;
 };
 
 typedef info_index<0> MISSILE_TYPE_INFO;
@@ -124,6 +130,9 @@ struct info_index<1>
     static const int value = 1;
     inline static const char* string() { return "missile::LOCATION"; }
     typedef cogflect::type_passthrough< double[3] >::type type;
+    typedef missile::type enum_type;
+    typedef missile::data data_type;
+    static const unsigned long long name_hash = 4666628800144805268u;
 };
 
 typedef info_index<1> LOCATION_INFO;
@@ -135,6 +144,9 @@ struct info_index<2>
     static const int value = 2;
     inline static const char* string() { return "missile::VELOCITY"; }
     typedef cogflect::type_passthrough< double[3] >::type type;
+    typedef missile::type enum_type;
+    typedef missile::data data_type;
+    static const unsigned long long name_hash = 1507608000310853010u;
 };
 
 typedef info_index<2> VELOCITY_INFO;
@@ -146,6 +158,9 @@ struct info_index<3>
     static const int value = 3;
     inline static const char* string() { return "missile::ACCELERATION"; }
     typedef cogflect::type_passthrough< double[3] >::type type;
+    typedef missile::type enum_type;
+    typedef missile::data data_type;
+    static const unsigned long long name_hash = 17348947259799395834u;
 };
 
 typedef info_index<3> ACCELERATION_INFO;
@@ -243,11 +258,41 @@ public:
         return sw.str;
     }
 
+    template<unsigned long long>
+    struct info_with_hash
+    {
+        typedef cogflect::false_t type;
+    };
+
     // This is a constant rather than a function so that it
     // can be used as a template parameter. In C++0x we can change
     // it to be a function using the 'constexpr' keyword.
     static const unsigned size = 4;
 
+};
+
+template<>
+struct type::info_with_hash<18317973204608468020u>
+{
+    typedef MISSILE_TYPE_INFO type;
+};
+
+template<>
+struct type::info_with_hash<4666628800144805268u>
+{
+    typedef LOCATION_INFO type;
+};
+
+template<>
+struct type::info_with_hash<1507608000310853010u>
+{
+    typedef VELOCITY_INFO type;
+};
+
+template<>
+struct type::info_with_hash<17348947259799395834u>
+{
+    typedef ACCELERATION_INFO type;
 };
 
 namespace {
@@ -289,6 +334,57 @@ struct pass_member_action
 
     Visitor& visitor_;
     DataType& data_;
+};
+
+/*
+TODO: Pull this stuff out and give access to a
+get_same_member<T> template that given an info template
+from one class gets you the same named T in the other
+class.
+*/
+
+template<class SourceMemberType, class TargetMemberType>
+struct shape_assign_helper
+{
+    inline static void assign(typename SourceMemberType::type& v,
+                              typename TargetMemberType::data_type& d)
+    {
+        v = d.template get_member<TargetMemberType>();
+    }
+};
+
+template<class SourceMemberType>
+struct shape_assign_helper<SourceMemberType, cogflect::false_t>
+{
+    // no-op when target doesn't have the same member
+    // use ellipses since no sensible type for second argument
+    inline static void assign(...)
+    {
+    }
+};
+
+template<class Source, class Target>
+struct shape_assign
+{
+    inline shape_assign(Target& target)
+      : target_(target)
+    {}
+
+    template<class MemberType>
+    void process_member(typename MemberType::type& v) const
+    {
+        // Check if target type has a member with the same name by checking if
+        // it has a member with the same name_hash as the current member type being
+        // iterated.
+
+        typedef typename Target::enum_type target_enum_type;
+        typedef typename target_enum_type::template info_with_hash<MemberType::name_hash>::type
+            potential_type;
+
+        shape_assign_helper<MemberType, potential_type>::assign(v, target_);
+    }
+
+    Target& target_;
 };
 
 }
@@ -378,6 +474,65 @@ public:
     {
         cogflect::pass_member_action<const Processor, const data> tmp(p, *this);
         type::index_switcher(index, tmp);
+    }
+
+    template<class VisitorT>
+    inline void for_all_members(VisitorT& visitor)
+    {
+        visitor.
+           template process_member<MISSILE_TYPE_INFO>(missile_type_);
+        visitor.
+           template process_member<LOCATION_INFO>(location_);
+        visitor.
+           template process_member<VELOCITY_INFO>(velocity_);
+        visitor.
+           template process_member<ACCELERATION_INFO>(acceleration_);
+    }
+
+    template<class VisitorT>
+    inline void for_all_members(VisitorT& visitor) const
+    {
+        visitor.
+           template process_member<MISSILE_TYPE_INFO>(missile_type_);
+        visitor.
+           template process_member<LOCATION_INFO>(location_);
+        visitor.
+           template process_member<VELOCITY_INFO>(velocity_);
+        visitor.
+           template process_member<ACCELERATION_INFO>(acceleration_);
+    }
+
+    template<class VisitorT>
+    inline void for_all_members(VisitorT const& visitor)
+    {
+        visitor.
+           template process_member<MISSILE_TYPE_INFO>(missile_type_);
+        visitor.
+           template process_member<LOCATION_INFO>(location_);
+        visitor.
+           template process_member<VELOCITY_INFO>(velocity_);
+        visitor.
+           template process_member<ACCELERATION_INFO>(acceleration_);
+    }
+
+    template<class VisitorT>
+    inline void for_all_members(VisitorT const& visitor) const
+    {
+        visitor.
+           template process_member<MISSILE_TYPE_INFO>(missile_type_);
+        visitor.
+           template process_member<LOCATION_INFO>(location_);
+        visitor.
+           template process_member<VELOCITY_INFO>(velocity_);
+        visitor.
+           template process_member<ACCELERATION_INFO>(acceleration_);
+    }
+
+    template<class TargetType>
+    inline void shape_assign(TargetType const& other)
+    {
+        cogflect::shape_assign<data, TargetType> visitor;
+        for_all_members(visitor);
     }
 
 
