@@ -1,2 +1,4 @@
 .gdbhistory
 .redo
+a.out
+*.o

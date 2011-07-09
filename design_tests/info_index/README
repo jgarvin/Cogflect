@@ -1,0 +1,1 @@
+This test was to confirm whether the compiler/linker were any better at throwing away data stored in inline template functions than as static members. Turns out the exact same binaries are generated, at least on Linux with g++ and GNU ld.
