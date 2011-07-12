@@ -41,7 +41,8 @@ class GeneratorBase(object):
                 if type(f.tags) == list:
                     maybeDupe = hasDupes(f.tags)
                     if maybeDupe:
-                        cog.error("You can't specify the same tag twice. "
+                        cog.error("You can't specify the same tag twice "
+                                  " on the same field. "
                                   "Tag specified twice: " + maybeDupe +
                                   " on field: " + f.name)
                     self.possible_tags.update(f.tags)
@@ -56,11 +57,17 @@ class GeneratorBase(object):
             for t in f.tags:
                 verifyName(t)
 
-            if (hasattr(f, "metadata") and f.metadata != None
-                and type(f.metadata) != list):
-                f.metadata = [f.metadata]
-            else:
+            if not hasattr(f, "metadata") or f.metadata == None:
                 f.metadata = []
+            elif type(f.metadata) == list:
+                metaNames = [m.name for m in f.metadata]
+                maybeDupe = hasDupes(metaNames)
+                if maybeDupe:
+                    cog.error("You can't specify metadata with the same "
+                              "name twice. Name specified twice: " +
+                              maybeDupe + " on field: " + f.name)
+            else:
+                f.metadata = [f.metadata]
 
             if not hasattr(f, "value"):
                 f.value = None
