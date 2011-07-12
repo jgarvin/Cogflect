@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import string
+
 import cog
 
 def hasDupes(collection):
@@ -10,23 +12,6 @@ def hasDupes(collection):
         contents.add(i)
 
     return False
-
-class typedef(object):
-    def __init__(self, cpp_type, name):
-        self.cpp_type = cpp_type
-        self.name = name
-
-    def out(self):
-        cog.out("typedef %s %s;" % (self.cpp_type, self.name))
-
-class const(object):
-    def __init__(self, cpp_type, name, value):
-        self.cpp_type = cpp_type
-        self.name = name
-        self.value = value
-
-    def out(self):
-        cog.out("static const %s %s = %s;" % (self.cpp_type, self.name, self.value))
 
 def indent(s, n):
     result = []
@@ -93,7 +78,31 @@ def verifyName(name):
         cog.error("Cannot use \"%s\" as a name. Names cannot start with an underscore, "
                   "they must follow C++ variable name rules." % name)
 
-    if not name.isalnum():
-        cog.error("Cannot use \"%s\" as a name. Names must be alphanumeric." % name)
+    alNumOrUnderscore = string.letters + string.digits + '_'
+    for c in name:
+        if c not in alNumOrUnderscore:
+            cog.error("Cannot use \"%s\" as a name. "
+                      "Names must can only have letters, numbers, "
+                      "and underscores." % name)
 
 
+class typedef(object):
+    def __init__(self, cpp_type, name):
+        self.cpp_type = cpp_type
+        self.name = name
+
+        verifyName(self.name)
+
+    def out(self):
+        cog.out("typedef %s %s;" % (self.cpp_type, self.name))
+
+class const(object):
+    def __init__(self, cpp_type, name, value):
+        self.cpp_type = cpp_type
+        self.name = name
+        self.value = value
+
+        verifyName(self.name)
+
+    def out(self):
+        cog.out("static const %s %s = %s;" % (self.cpp_type, self.name, self.value))
