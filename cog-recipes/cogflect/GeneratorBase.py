@@ -30,7 +30,7 @@ class GeneratorBase(object):
 
         for f in self.fields:
             if hasattr(f, "tags") and f.tags != None:
-                if type(f.tags) == list:
+                if type(f.tags) == list or type(f.tags) == set:
                     self.possible_tags.update(f.tags)
                 else:
                     self.possible_tags.add(f.tags)
