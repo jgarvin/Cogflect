@@ -37,7 +37,7 @@ void data_test_1(T& foo)
 {
     TEST_ASSERT(foo.template get_indexed_member<1>() == 3);
 
-    for(unsigned i = 0; i < example::size; ++i) {
+    for(unsigned i = 0; i < example::type::size; ++i) {
         visitor bar;
         foo.get_runtime_indexed_member(bar, i);
     }
@@ -46,7 +46,7 @@ void data_test_1(T& foo)
 
     // Separately test with a temporary to make sure that it works
     // with the type inference.
-    for(unsigned i = 0; i < example::size; ++i) {
+    for(unsigned i = 0; i < example::type::size; ++i) {
         foo.get_runtime_indexed_member(visitor(), i);
     }
     TEST_ASSERT(val_print::o.str() == "example::SHOE_PRICE 45.3 example::GUM_PRICE 3 example::CAR_PRICE 20 ");
