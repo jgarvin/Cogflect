@@ -2,6 +2,15 @@
 
 import cog
 
+def hasDupes(collection):
+    contents = set()
+    for i in collection:
+        if i in contents:
+            return i
+        contents.add(i)
+
+    return False
+
 class typedef(object):
     def __init__(self, cpp_type, name):
         self.cpp_type = cpp_type

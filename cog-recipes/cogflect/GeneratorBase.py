@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-from util import verifyName
+from util import verifyName, hasDupes
+
+import cog
 
 # 'object' is a C class so python doesn't let us set arbitrary
 # attributes on it. We subclass it so we can just smack whatever
@@ -28,9 +30,22 @@ class GeneratorBase(object):
                 setattr(field, field_name, value)
             self.fields.append(field)
 
+        fieldNames = [f.name for f in self.fields]
+        maybeDupe = hasDupes(fieldNames)
+        if maybeDupe:
+            cog.error("You can't specify the same field name twice. "
+                      "Name specified twice: " + maybeDupe)
+
         for f in self.fields:
             if hasattr(f, "tags") and f.tags != None:
-                if type(f.tags) == list or type(f.tags) == set:
+                if type(f.tags) == list:
+                    maybeDupe = hasDupes(f.tags)
+                    if maybeDupe:
+                        cog.error("You can't specify the same tag twice. "
+                                  "Tag specified twice: " + maybeDupe +
+                                  " on field: " + f.name)
+                    self.possible_tags.update(f.tags)
+                elif type(f.tags) == set:
                     self.possible_tags.update(f.tags)
                 else:
                     self.possible_tags.add(f.tags)
