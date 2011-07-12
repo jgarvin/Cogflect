@@ -193,6 +193,7 @@ Some examples of cases that should be supported:
 ## Why use cog rather than [Cheetah](http://www.cheetahtemplate.org/ "Cheetah Template Engine")?
 
  * Cog specifically has support for indenting the generated code according to how the cog tags are indented, helping keep the generated code human readable. Cheetah may support something similar but I didn't find it in a quick scan of its documentation.
+ * Cheetah's escaping rules looked hard to remember. Remembering to stick code only in cog sections inside comments is easy.
  * Cheetah doesn't generate output files directly. It generates a python script that when run finally generates the output file. I assume this is an optimization for web servers where Cheetah is meant to be used, but I haven't investigated. Generated code is already harder to debug, another layer is simply too much. Cheetah can be passed a flag so that it doesn't appear to make an intermediate file, but I assume it still generates the intermediate code in memory, just without writing it to disk, so the added complexity is still there (Cheetah users feel free to correct me ;).
 
 ## Could C++0x's strongly typed enums be used in the future?
